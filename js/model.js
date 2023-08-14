@@ -15,6 +15,9 @@ let data = {
   getMaxPayment() {
     return this.cost * this.maxPaymentPercent;
   },
+  minTime:1,
+  maxTime:30,
+  time:10,
   programs: {
     base: 0.1,
     it: 0.047,
@@ -85,9 +88,37 @@ function setData(newData) {
     newData.cost = data.maxPrice;
   }
 
+  //рассчет ипотеки 
+
+  //количество месяцев
+  const months = data.time * 12
+  console.log('months:', months)
+
+  //общая стоимость кредита
+  const totalAmount= data.cost  - data.payment
+  console.log('totalAmount:', totalAmount)
+
+  //ежемесячная ставка
+  const monthRate = data.selectedProgram / 12 
+  console.log('monthRate:', monthRate)
+
+  //общая ставка
+  const generalRate = (1 + monthRate) ** months
+  console.log('generalRate:', generalRate)
+
+  //ежемесячный платеж
+  const monthPayment = (totalAmount * monthRate * generalRate) / (generalRate -1)
+  console.log('monthPayment:', monthPayment)
+
+  //переплата
+  const overPayment = monthPayment * months - totalAmount
+  console.log('overPayment:', overPayment )
+  
+
   //обновление данных модели
   data = { ...data, ...newData };
-  results = { rate: data.selectedProgram };
+  results = { rate: data.selectedProgram, totalAmount, monthPayment , overPayment };
+  console.log('results', results)
 }
 
 export { getData, setData, getResults };

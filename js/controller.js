@@ -6,10 +6,16 @@ import costInputInit from "./view/costInput.js";
 import costRange from "./view/costRange.js";
 import paymentRange from "./view/paymentRange.js";
 import paymentInputInit from "./view/paymentInput.js";
+import timeInputInit from "./view/timeInput.js";
+import timeRange from "./view/timeRange.js";
 import { updateMinFirstPayment, updateMaxFirstPayment } from "./view/utils.js";
 
 window.onload = function () {
   const getData = Model.getData;
+
+
+  
+   
 
   // min / max payment percents
   const min = getData().minPaymentPercent;
@@ -33,6 +39,18 @@ window.onload = function () {
 
   //init paymentRange
   const paymentSlider = paymentRange(getData);
+
+
+  //init timeInput
+  const time = timeInputInit(getData);
+
+   //init timeRange
+   const timeSlider = timeRange(getData);
+
+   //выводим первоначальные данные результата
+   Model.setData({})
+   const results = Model.getResults()
+   updateResultsView(results);
 
   //прослушка событий  на уровне document
   document.addEventListener("updateForm", (event) => {
@@ -94,6 +112,18 @@ window.onload = function () {
     if (data.onUpdate === "paymentInput") {
       //обновляем первоначальный взнос
       paymentSlider.noUiSlider.set(data.paymentPercent * 100);
+    }
+
+    //update timetInput
+    if (data.onUpdate === "timeSlider") {
+      //обновляем первоначальный взнос
+      time.setRawValue(data.time);
+    }
+
+    //update timeSlider
+    if (data.onUpdate === "timeInput") {
+      //обновляем первоначальный взнос
+      timeSlider.noUiSlider.set(data.time);
     }
   }
 };
