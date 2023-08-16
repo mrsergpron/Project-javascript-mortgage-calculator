@@ -126,7 +126,9 @@ window.onload = function () {
       timeSlider.noUiSlider.set(data.time);
     }
   }
-  //order form
+    
+
+   //order form
 
    // кнопка оставить заявку
    const openFormBtn = document.getElementById('openFormBtn')
@@ -221,13 +223,13 @@ window.onload = function () {
   data, results
 
 }
-
+  console.log('form',form)
   //отправка данных на сервер
   async function sendData(url, post) {
     //отправка заголовка
-  const headers = {'Content-type':'application/json;charset=utf-8'}
+  const headers = {'Content-type':'application/json'}
       
-  try {
+  
               
      const response = await fetch(url + 'mail.php', 
       
@@ -238,7 +240,7 @@ window.onload = function () {
           throw new Error(`Ошибка по адресу ${url}, статус ошибки ${response.status}`)
       }  // проверка на ошибки
   
-      const data = await response.json() // ждет пока не исполнится запрос на сервер
+      const data = await response.text() // ждет пока не исполнится запрос на сервер
               
      console.log('SendData:', data) // вывод полученных данных в консоль
 
@@ -257,20 +259,19 @@ window.onload = function () {
     //скрываем форму
     orderForm.classList.add('none')
 
-    //показываем блоки Успешной отправки или ошибки
-    if(results==='SUCCESS'){
+    //показываем блоки Успешной отправки 
+   
       document.getElementById('success').classList.remove('none')
-    }else {
-      document.getElementById('error').classList.remove('none')
-    }
+ 
+
+  
 
 
-  }
-
-  catch(error){console.error(error)}  // пойманные ошибки
 }
 
 sendData (url, form)
   
   })
+
+
 };
