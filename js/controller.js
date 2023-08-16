@@ -126,4 +126,152 @@ window.onload = function () {
       timeSlider.noUiSlider.set(data.time);
     }
   }
+    
+
+   //order form
+
+   // кнопка оставить заявку
+   const openFormBtn = document.getElementById('openFormBtn')
+
+   //форма
+   const orderForm = document.getElementById('orderForm')
+
+   //кнопка оформить заявку
+   const submitFormBtn = document.getElementById('submitFormBtn')
+
+
+   //открываем форму и скрываем кнопку "оставить заявку"
+   openFormBtn.addEventListener('click', function(){
+   orderForm.classList.remove('none')
+   openFormBtn.classList.add('none')
+   })
+
+
+   //слушаем событие submit  формы
+   orderForm.addEventListener('submit', function(event){
+    event.preventDefault();
+
+
+    //собираем данные из формы
+    let formData = new FormData(orderForm);
+
+    //получаем данные полей
+    console.log(formData.get('name'))
+    console.log(formData.get('email'))
+    console.log(formData.get('phone'))
+
+    //блокируем  кнопку при отправке данных
+    submitFormBtn.setAttribute('disabled', '')
+    submitFormBtn.innerText = 'Заявка отправляется...'
+
+    //блокируем поля input  при лтправке данных
+    const inputs = orderForm.querySelectorAll('input')
+  inputs.forEach((input)=>input.setAttribute('disabled', ''))
+
+
+
+    //отправка данных
+    //отправляем объекты: data,results, данные формы
+  
+  const data = Model.getData()
+  const results = Model.getResults()
+
+  //текущий адрес нашего сайта
+  //document.location.href  = http://127.0.0.1:5500/index.html
+  let url = checkUrl(document.location.href)
+  console.log('URL', url)
+
+
+ 
+  //функция очистки url от названия страницы
+  //http://127.0.0.1:5500/
+  function checkUrl(url){
+
+    let allArrayDot = url.split('.')
+    console.log(url) //http://127.0.0.1:5500/index.html
+    console.log(allArrayDot) //['http://127', '0', '0', '1:5500/index', 'html']
+
+
+
+    if(allArrayDot[allArrayDot.length -1]==='html' ||allArrayDot[allArrayDot.length -1]==='htm'|| allArrayDot[allArrayDot.length -1]==='php' ||allArrayDot[allArrayDot.length -1]==='js'){
+      allArrayDot.pop()
+      console.log(allArrayDot) // ['http://127', '0', '0', '1:5500/index']
+
+      let newUrl = allArrayDot.join('.')
+      console.log(newUrl) //http://127.0.0.1:5500/index
+
+      let urlArraySlash = newUrl.split('/')
+      console.log(urlArraySlash) //  ['http:', '', '127.0.0.1:5500', 'index']
+      urlArraySlash.pop()
+      console.log(urlArraySlash) //['http:', '', '127.0.0.1:5500']
+
+      newUrl  = urlArraySlash.join('/') + '/'
+      console.log(newUrl ) //http://127.0.0.1:5500/
+
+
+      return newUrl
+    }
+    return url
+  }
+ 
+
+  //формируем объект данных для передачи на сервер
+  const form = {
+  name:formData.get('name'),
+  email: formData.get('email'),
+  phone: formData.get('phone'),
+  data, results
+
+}
+  console.log('form',form)
+  //отправка данных на сервер
+  async function sendData(url, post) {
+    //отправка заголовка
+  const headers = {'Content-type':'application/json'}
+      
+  
+              
+     const response = await fetch(url + 'mail.php', 
+      
+      {method:'POST', 
+      body: JSON.stringify(post), headers:headers}) // ждет пока не исполнится запрос на сервер
+
+     if (!response.ok || response.status>=400) {
+          throw new Error(`Ошибка по адресу ${url}, статус ошибки ${response.status}`)
+      }  // проверка на ошибки
+  
+      const data = await response.text() // ждет пока не исполнится запрос на сервер
+              
+     console.log('SendData:', data) // вывод полученных данных в консоль
+
+     //разблокируем  кнопку при отправке данных
+    submitFormBtn.removeAttribute('disabled')
+    submitFormBtn.innerText = 'Оформить заявку'
+
+    //разблокируем  поля input  при отправке данных
+    const inputs = orderForm.querySelectorAll('input')
+    inputs.forEach((input)=>input.removeAttribute('disabled'))
+
+
+    //очищаем поля формы
+    orderForm.reset()
+
+    //скрываем форму
+    orderForm.classList.add('none')
+
+    //показываем блоки Успешной отправки 
+   
+      document.getElementById('success').classList.remove('none')
+ 
+
+  
+
+
+}
+
+sendData (url, form)
+  
+  })
+
+
 };
